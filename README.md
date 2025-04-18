@@ -67,31 +67,31 @@ The application requires the following environment variables:
 ### Installation
 
 1. Clone the repository:
-   \`\`\`bash
+   ```bash
    git clone https://github.com/samirxnova/prizmora.git
    cd prizmora
-   \`\`\`
+   ```
 
 2. Install dependencies:
-   \`\`\`bash
+   ```bash
    npm install
    # or
    yarn install
-   \`\`\`
+   ```
 
 3. Set up environment variables:
    Create a `.env.local` file in the root directory and add your API keys:
-   \`\`\`
+   ```
    OPENAI_API_KEY=your_openai_api_key
    GEMINI_API_KEY=your_gemini_api_key
-   \`\`\`
+   ```
 
 4. Run the development server:
-   \`\`\`bash
+   ```bash
    npm run dev
    # or
    yarn dev
-   \`\`\`
+   ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
@@ -101,12 +101,3 @@ The application requires the following environment variables:
 2. Click "Fuse Images" to combine them
 3. Use the prompt editor to refine your creation
 4. Download or share your artwork
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Special thanks to the AI and Web3 communities for inspiration
-- Prismo mascot design by [Designer Name]
