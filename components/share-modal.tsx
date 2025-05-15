@@ -4,6 +4,7 @@ import { useState } from "react"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ZoraCoinCreator from "./zora-coin-creator"
+import { useToast } from "@/components/ui/use-toast"
 
 interface ShareModalProps {
   onClose: () => void
@@ -14,9 +15,11 @@ interface ShareModalProps {
 export default function ShareModal({ onClose, imageUrl, imageTitle = "AI Fusion Art" }: ShareModalProps) {
   const [caption, setCaption] = useState("")
   const [showZoraCreator, setShowZoraCreator] = useState(false)
+  const [zoraImageFile, setZoraImageFile] = useState<File | null>(null)
+  const [isPreparingZora, setIsPreparingZora] = useState(false)
+  const { toast } = useToast()
 
-  // Update the handleShare function to use cloudinaryUrl
-  const handleShare = (platform: string) => {
+  const handleShare = async (platform: string) => {
     if (platform === "twitter") {
       const text = `Just fused this AI artwork using Prizmora! ✨`
       const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(imageUrl)}`
@@ -25,14 +28,42 @@ export default function ShareModal({ onClose, imageUrl, imageTitle = "AI Fusion 
       const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`
       window.open(url, "_blank")
     } else if (platform === "instagram") {
-      // Instagram doesn't have a direct sharing URL, but we can inform the user
       alert("To share on Instagram, please download the image first and upload it to your Instagram account.")
     } else if (platform === "zora") {
-      setShowZoraCreator(true)
+      if (!imageUrl) {
+        toast({
+          title: "Error",
+          description: "Image URL is missing, cannot prepare for Zora coin creation.",
+          variant: "destructive",
+        })
+        return
+      }
+      setIsPreparingZora(true)
+      try {
+        const response = await fetch(imageUrl)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image for Zora: ${response.statusText}`)
+        }
+        const blob = await response.blob()
+        const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1) || "fused-art"
+        const fileExtension = blob.type.split('/')[1] || "png"
+        const finalFileName = `${fileName.split('.').slice(0, -1).join('.') || fileName}.${fileExtension}`
+        
+        const file = new File([blob], finalFileName, { type: blob.type })
+        setZoraImageFile(file)
+        setShowZoraCreator(true)
+      } catch (error: any) {
+        console.error("Error preparing image for Zora:", error)
+        toast({
+          title: "Error Preparing Image",
+          description: error.message || "Could not fetch image for Zora coin creation.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsPreparingZora(false)
+      }
     } else {
-      // In a real app, this would share to the actual platform
       console.log(`Sharing to ${platform} with caption: ${caption}`)
-      // Close modal after sharing
       setTimeout(() => {
         onClose()
       }, 500)
@@ -109,12 +140,25 @@ export default function ShareModal({ onClose, imageUrl, imageTitle = "AI Fusion 
               {/* Zora */}
               <Button
                 onClick={() => handleShare("zora")}
+                disabled={isPreparingZora}
                 className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:opacity-90 rounded-lg py-2 transition-all duration-200"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-                </svg>
-                <span>Create Zora Coin</span>
+                {isPreparingZora ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Preparing...
+                  </>
+                ) : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+                    </svg>
+                    <span>Create Zora Coin</span>
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -122,12 +166,17 @@ export default function ShareModal({ onClose, imageUrl, imageTitle = "AI Fusion 
       </div>
 
       {/* Zora Coin Creator Modal */}
-      <ZoraCoinCreator
-        isOpen={showZoraCreator}
-        onClose={() => setShowZoraCreator(false)}
-        imageUrl={imageUrl}
-        imageTitle={imageTitle}
-      />
+      {showZoraCreator && (
+        <ZoraCoinCreator
+          isOpen={showZoraCreator}
+          onClose={() => {
+            setShowZoraCreator(false)
+            setZoraImageFile(null)
+          }}
+          imageFile={zoraImageFile}
+          imageTitle={imageTitle}
+        />
+      )}
     </>
   )
 }

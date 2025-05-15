@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     const base64Data = await blobToBase64(imageBlob)
 
     // Upload to Cloudinary
-    const cloudinaryUrl = await uploadToCloudinary(base64Data)
+    const cloudinaryUrl = await uploadToCloudinary(base64Data, imageBlob.type || "image/png")
 
     return NextResponse.json({
       success: true,
@@ -107,7 +107,7 @@ async function blobToBase64(blob: Blob): Promise<string> {
 }
 
 // Function to upload to Cloudinary using signed upload
-async function uploadToCloudinary(base64Image: string): Promise<string> {
+async function uploadToCloudinary(base64Image: string, mimeType: string): Promise<string> {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME
   if (!cloudName) {
     throw new Error("CLOUDINARY_CLOUD_NAME is not configured")
@@ -137,7 +137,7 @@ async function uploadToCloudinary(base64Image: string): Promise<string> {
 
   // Create form data for Cloudinary upload
   const formData = new FormData()
-  formData.append("file", `data:image/png;base64,${base64Image}`)
+  formData.append("file", `data:${mimeType};base64,${base64Image}`)
   formData.append("api_key", apiKey)
   formData.append("timestamp", timestamp)
   formData.append("signature", signature)
