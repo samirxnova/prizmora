@@ -22,6 +22,7 @@ The “Z” adds a touch of Web3 flair and meme-inspired fun.
 ## 🌈 Features
 
 * 🎨 **Image Fusion**: Upload up to 4 images and fuse them using AI
+* 🖼️ **GIF Upload & Frame Extraction**: Upload a GIF, extract its frames, and use them as fusion sources
 * ✏️ **Prompt Editing**: Refine and guide the final image with creative prompts
 * 🌀 **Fusion Animations**: Enjoy 3D and motion effects while your artwork forms
 * 📤 **Social Sharing**: Share your artwork across platforms
@@ -33,36 +34,42 @@ The “Z” adds a touch of Web3 flair and meme-inspired fun.
 
 ## 🆕 Latest Changes
 
+### 🖼️ GIF Upload & Frame Extraction
+
+* **Upload GIFs**: Drag and drop a GIF or select from your files.
+* **Frame Extraction**: The app extracts all frames from the GIF using an in-browser utility powered by `gifuct-js`.
+* **Frame Preview**: Preview extracted frames before fusion.
+* **Fuse Frames**: Use extracted GIF frames as fusion sources, just like static images.
+
 ### 🪙 Zora Coin Integration
 
-Prizmora now lets users mint their AI-generated artwork as a **Zora Coin** directly from the Share Modal.
+* **Mint as Coin**: After fusion, mint your artwork as a Zora Coin directly from the app.
+* **MetaMask & Base Mainnet**: Connect your MetaMask wallet and ensure you're on Base mainnet to mint.
+* **Live Transaction**: Real minting with transaction hash feedback and error handling.
 
-* ✅ **New Component**: `ZoraCoinCreator` handles:
+### 🔧 How it Works
 
-  * Coin name and symbol input
-  * Description and metadata creation
-  * Interaction with the Zora SDK
-  * Error/success feedback
+1. **Upload Images or GIFs**: Choose up to 4 static images, or upload a GIF to extract all its frames.
+2. **Preview & Select**: See your images or GIF frames in the preview area.
+3. **Fuse**: Click “Fuse” to blend your images or frames using the Gemini AI API.
+4. **Mint as Coin**: When your fusion is ready, click “Mint as Coin”.
+5. **Connect Wallet**: Use MetaMask and make sure you're on Base mainnet. The app will warn you if not.
+6. **Mint**: Enter coin details and mint. Approve the transaction in MetaMask.
+7. **Get Confirmation**: See your transaction hash and share your new Zora Coin!
 
-* ✅ **ShareModal Updated**:
+---
 
-  * Added a “Create Zora Coin” button
-  * Launches the coin creation modal
-  * Uses Prizmora’s design language and styling
+## 🖼️ GIF Upload & Frame Extraction Utility
 
-* ✅ **Styling Enhancements**:
+Prizmora includes a robust GIF frame extraction utility:
 
-  * Gradient styling consistent with the app
-  * Matching modal and button components
-  * Responsive layout improvements
-
-**🔧 How it Works**:
-
-1. Generate a fused image
-2. Click **Share**
-3. Select **Create Zora Coin**
-4. Enter name, symbol (auto-uppercase), and description
-5. Mint the coin via the Zora SDK
+- **Component**: `gif-upload.tsx`
+- **Utility**: `gif-utils.ts` (uses `gifuct-js`)
+- **How it works**:
+  - User uploads a GIF.
+  - Frames are extracted in-browser (no server upload needed).
+  - Frames are displayed for preview and selection.
+  - Selected frames are used as fusion sources.
 
 ---
 
